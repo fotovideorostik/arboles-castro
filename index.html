@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crunch! Árboles de Castro Urdiales</title>
+<style>
+:root{--bg:#faf6ee;--card:#fff;--ink:#2b2418;--mut:#7a6e5b;--line:#e8dfcc;--acc:#c2571a;--bar:#e9dcc3;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1812;--card:#272117;--ink:#f1e9d8;--mut:#a89c85;--line:#3a3222;--acc:#f08a4b;--bar:#3a3222}}
+:root[data-theme="dark"]{--bg:#1c1812;--card:#272117;--ink:#f1e9d8;--mut:#a89c85;--line:#3a3222;--acc:#f08a4b;--bar:#3a3222}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.4}
+main{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.6rem;margin:0 0 4px;font-family:Georgia,serif}
+.sub{color:var(--mut);font-size:.9rem;margin:0 0 16px}
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:grid;grid-template-columns:34px 1fr auto;gap:4px 12px}
+.art{grid-column:3;grid-row:1/span 4;align-self:center}
+.art svg{width:76px;height:auto;display:block}
+.rank{grid-row:span 4;font-family:Georgia,serif;font-size:1.5rem;color:var(--acc);font-weight:700;text-align:center;padding-top:2px}
+.name{font-weight:600}
+.lat{font-style:italic;color:var(--mut);font-size:.85rem;font-weight:400}
+.meter{display:flex;align-items:center;gap:8px}
+.track{flex:1;height:8px;border-radius:99px;background:var(--bar);overflow:hidden}
+.fill{height:100%;background:var(--acc);border-radius:99px}
+.num{font-size:.85rem;font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
+.note{font-size:.88rem;color:var(--mut)}
+.tag{display:inline-block;font-size:.7rem;padding:1px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mut);margin-left:6px;vertical-align:middle}
+footer{font-size:.8rem;color:var(--mut);margin-top:18px}
+.map{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px;margin-bottom:12px}
+.map svg{width:100%;height:auto;display:block}
+.sea{fill:#8fbcd6;opacity:.35}
+.z{fill:var(--bar);stroke:var(--line);cursor:pointer}
+.z.on{fill:var(--acc);fill-opacity:.45;stroke:var(--acc)}
+.z.sel{fill:var(--acc);fill-opacity:.85;stroke:var(--acc)}
+.zl{font-size:11px;fill:var(--ink);pointer-events:none;text-anchor:middle}
+.zs{font-size:11px;fill:var(--mut);pointer-events:none;text-anchor:middle;font-style:italic}
+.hint{font-size:.8rem;color:var(--mut);margin:6px 4px 0}
+.zt{font-size:.78rem;color:var(--acc)}
+.card{cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+<h1>🍂 Crunch! Árboles de Castro Urdiales</h1>
+<p class="sub">Ordenados de más a menos crujientes al pisar sus hojas secas.</p>
+<div class="map"><svg viewBox="0 0 360 200" role="img" aria-label="Croquis esquemático de Castro Urdiales por zonas">
+<rect class="sea" x="0" y="0" width="360" height="52" rx="8"/>
+<text class="zs" x="180" y="30">Mar Cantábrico</text>
+<text class="zs" x="340" y="194">N ↑</text>
+<g data-z="or"><rect class="z" x="8" y="60" width="62" height="50" rx="10"/><text class="zl" x="39" y="89">Oriñón</text></g>
+<g data-z="is"><rect class="z" x="76" y="58" width="62" height="50" rx="10"/><text class="zl" x="107" y="87">Islares</text></g>
+<g data-z="co"><rect class="z" x="144" y="56" width="54" height="46" rx="10"/><text class="zl" x="171" y="83">Cotolino</text></g>
+<g data-z="ce"><rect class="z" x="204" y="54" width="72" height="54" rx="10"/><text class="zl" x="240" y="78">Centro</text><text class="zs" x="240" y="92">Amestoy</text></g>
+<g data-z="mi"><rect class="z" x="282" y="58" width="70" height="50" rx="10"/><text class="zl" x="317" y="87">Mioño</text></g>
+<g data-z="su"><rect class="z" x="60" y="122" width="130" height="62" rx="10"/><text class="zl" x="125" y="150">Santullán</text><text class="zs" x="125" y="165">interior</text></g>
+<g data-z="sa"><rect class="z" x="198" y="122" width="130" height="62" rx="10"/><text class="zl" x="263" y="150">Sámano</text><text class="zs" x="263" y="165">interior</text></g>
+</svg><p class="hint" id="hint"></p></div>
+<div class="tabs" id="tabs"></div>
+<div id="list"></div>
+<footer>Puntuación (0–10) orientativa: estimada según grosor, sequedad y fragilidad de la hoja caída. Lista representativa de especies habituales en la costa oriental de Cantabria y sus parques; no es un censo oficial del municipio. El mapa es un croquis esquemático y las zonas de cada árbol son una estimación según su hábitat típico (parques urbanos, costa, valles interiores, plantaciones), no datos de inventario. Los dibujos son esquemas simplificados (silueta del árbol y forma de la hoja) para ayudarte a reconocerlos; los colores son orientativos.</footer>
+</main>
+<script>
+var T=[
+["Plátano de sombra","Platanus × hispanica","Caduco",10,"Hojas enormes que se secan del todo: el crujido de referencia."],
+["Magnolio","Magnolia grandiosa","Perenne",9,"Hojas grandes y coriáceas; estallan al pisarlas."],
+["Roble común","Quercus robur","Caduco",9,"Hojas lobuladas, duras y secas; muchas caen tarde, ya bien curadas."],
+["Castaño","Castanea sativa","Caduco",8,"Hoja larga y dentada que se vuelve quebradiza. Ojo con los erizos."],
+["Haya","Fagus sylvatica","Caduco",8,"Hoja fina que se seca como papel; más susurro que golpe."],
+["Liquidámbar","Liquidambar styraciflua","Caduco",8,"Hojas estrelladas, rígidas al secarse. Muy vistosas en otoño."],
+["Eucalipto","Eucalyptus globulus","Perenne",7,"Hojas curvas y trozos de corteza que chasquean. Cae todo el año."],
+["Encina","Quercus ilex","Perenne",7,"Hoja coriácea con borde espinoso; crujido seco y áspero."],
+["Arce / falso plátano","Acer pseudoplatanus","Caduco",7,"Hoja palmeada amplia que se reseca bien."],
+["Castaño de Indias","Aesculus hippocastanum","Caduco",7,"Hojas grandes; crujen si se secan antes de pudrirse."],
+["Chopo / álamo","Populus sp.","Caduco",6,"Hoja ligera que crepita con poca presión."],
+["Tilo","Tilia sp.","Caduco",6,"Crujido medio, hoja fina en forma de corazón."],
+["Madroño","Arbutus unedo","Perenne",6,"Hoja dura y brillante, crujido corto."],
+["Abedul","Betula pubescens","Caduco",5,"Hojas pequeñas: un crepitar fino, nada espectacular."],
+["Laurel","Laurus nobilis","Perenne",5,"Hoja coriácea que cruje al secarse del todo."],
+["Olmo","Ulmus minor","Caduco",5,"Hojas medianas y ásperas, crujido discreto."],
+["Fresno","Fraxinus excelsior","Caduco",4,"Los foliolos caen aún blandos y se pudren pronto."],
+["Sauce","Salix sp.","Caduco",4,"Hoja estrecha y fina, apenas suena."],
+["Aliso","Alnus glutinosa","Caduco",3,"Cae verde y blando: casi no cruje."],
+["Pino insigne","Pinus radiata","Perenne",3,"Las acículas amortiguan; solo crujen las piñas."],
+["Ginkgo","Ginkgo biloba","Caduco",3,"Cae de golpe, pero queda blando y mojado."],
+["Tejo","Taxus baccata","Perenne",1,"Acículas blandas: silencio total."]
+];
+var f="Todos",tabs=document.getElementById("tabs"),list=document.getElementById("list");
+["Todos","Caduco","Perenne"].forEach(function(n){
+ var b=document.createElement("button");
+ b.textContent=n==="Todos"?"Todos":n==="Caduco"?"Caducifolios":"Perennes";
+ b.setAttribute("aria-pressed",n===f);
+ b.onclick=function(){f=n;[].forEach.call(tabs.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");render()};
+ tabs.appendChild(b)});
+function render(){
+ var d=T.filter(function(t){return (f==="Todos"||t[2]===f)&&(!sz||(ZT[t[0]]||[]).indexOf(sz)>-1)}).sort(function(a,b){return b[3]-a[3]||a[0].localeCompare(b[0])});
+ list.innerHTML=d.map(function(t,i){return '<div class="card" data-n="'+t[0]+'"><div class="rank">'+(i+1)+'</div><div class="art">'+art(t[0])+'</div><div class="name">'+t[0]+'<span class="tag">'+t[2]+'</span><br><span class="lat">'+t[1]+'</span></div><div class="meter"><div class="track"><div class="fill" style="width:'+t[3]*10+'%"></div></div><span class="num">'+t[3]+'/10</span></div><div class="note">'+t[4]+'</div><div class="zt">📍 '+(ZT[t[0]]||[]).map(function(c){return Z[c]}).join(", ")+'</div></div>'}).join("");paint();
+}
+var Z={or:"Oriñón",is:"Islares",co:"Cotolino",ce:"Centro",mi:"Mioño",su:"Santullán",sa:"Sámano"};
+var ZT={"Plátano de sombra":["ce","mi"],"Magnolio":["ce"],"Roble común":["sa","su","is"],"Castaño":["su","sa","or"],"Haya":["su"],"Liquidámbar":["ce"],"Eucalipto":["or","is","mi","sa","su"],"Encina":["co","is","ce"],"Arce / falso plátano":["ce","sa"],"Castaño de Indias":["ce"],"Chopo / álamo":["mi","sa"],"Tilo":["ce"],"Madroño":["co","is"],"Abedul":["su","sa"],"Laurel":["ce","co","mi"],"Olmo":["ce","su"],"Fresno":["su","sa","mi"],"Sauce":["sa","mi"],"Aliso":["sa","su","mi"],"Pino insigne":["or","is","su","sa"],"Ginkgo":["ce"],"Tejo":["su","ce"]};
+var V=`<path d='M16 29V7' fill='none' stroke='#0000004d'/>`;
+var L={
+ov:`<path d='M16 3C24 8 26 18 16 29C6 18 8 8 16 3Z'/>`+V,
+el:`<path d='M16 2C22 10 22 22 16 30C10 22 10 10 16 2Z'/>`+V,
+wide:`<path d='M16 2C28 8 28 24 16 30C4 24 4 8 16 2Z'/>`+V,
+tooth:`<path d='M16 2L19 6L23 8L21 12L25 15L21 19L23 23L18 25L16 30L14 25L9 23L11 19L7 15L11 12L9 8L13 6Z'/>`+V,
+spiny:`<path d='M16 6L19 8L23 9L22 13L26 16L22 19L23 23L19 23L16 27L13 23L9 23L10 19L6 16L10 13L9 9L13 8Z'/>`+V,
+heart:`<path d='M16 28C6 20 3 12 8 7C12 4 15 7 16 10C17 7 20 4 24 7C29 12 26 20 16 28Z'/>`+V,
+oak:`<path d='M16 30V26C12 26 11 23 13 21C8 21 7 17 11 16C7 14 8 10 12 10C10 7 13 4 16 3C19 4 22 7 20 10C24 10 25 14 21 16C25 17 24 21 19 21C21 23 20 26 16 26Z'/>`,
+plat:`<path d='M16 28L10 24L4 24L6 17L3 11L10 11L12 4L16 8L20 4L22 11L29 11L26 17L28 24L22 24Z'/>`,
+arce:`<path d='M16 29L13 21L6 22L8 15L3 10L11 10L12 3L16 8L20 3L21 10L29 10L24 15L26 22L19 21Z'/>`,
+liq:`<path d='M16 29L14 21L4 20L10 14L5 7L13 9L16 2L19 9L27 7L22 14L28 20L18 21Z'/>`,
+indias:[-60,-30,0,30,60].map(function(a){return `<ellipse cx='16' cy='15' rx='3.2' ry='10' transform='rotate(${a} 16 29)'/>`}).join(''),
+fresno:`<path d='M16 30V3' fill='none' stroke='#0000004d'/>`+[7,13,19,25].map(function(y){return `<ellipse cx='10' cy='${y}' rx='5' ry='2.2' transform='rotate(-20 10 ${y})'/><ellipse cx='22' cy='${y}' rx='5' ry='2.2' transform='rotate(20 22 ${y})'/>`}).join('')+`<ellipse cx='16' cy='3' rx='2' ry='3'/>`,
+chopo:`<path d='M16 3L28 22C22 28 10 28 4 22Z'/>`+V,
+abed:`<path d='M16 3L22 12L25 22L16 29L7 22L10 12Z'/>`+V,
+eucal:`<path d='M8 28C6 16 12 6 24 3C18 8 15 18 15 29Z'/>`,
+gink:`<path d='M16 29L15 20C6 18 3 10 5 5C9 8 12 6 16 9C20 6 23 8 27 5C29 10 26 18 17 20Z'/>`,
+sauce:`<path d='M16 2C19 10 19 22 16 30C13 22 13 10 16 2Z'/>`+V,
+pino:`<path d='M16 30L5 4M16 30L16 2M16 30L27 4' fill='none' stroke='#3d6b3a' stroke-width='2' stroke-linecap='round'/>`,
+tejo:`<path d='M16 30V2' fill='none' stroke='#3d5a35' stroke-width='1.5'/>`+[8,14,20,26].map(function(y){return `<path d='M16 ${y}L6 ${y-4}M16 ${y}L26 ${y-4}' fill='none' stroke='#2f5a35' stroke-width='2.5' stroke-linecap='round'/>`}).join('')
+};
+var K={
+round:`<circle cx='20' cy='22' r='16'/>`,
+oval:`<ellipse cx='20' cy='24' rx='13' ry='19'/>`,
+slim:`<ellipse cx='20' cy='24' rx='9' ry='19'/>`,
+col:`<ellipse cx='20' cy='22' rx='7' ry='20'/>`,
+cone:`<path d='M20 2L35 40H5Z'/>`,
+vase:`<path d='M20 42C14 30 3 25 5 12C9 3 16 8 20 10C24 8 31 3 35 12C37 25 26 30 20 42Z'/>`,
+weep:`<ellipse cx='20' cy='16' rx='15' ry='11'/><path d='M6 20V40M12 24V44M28 24V44M34 20V40' fill='none' stroke-width='3'/>`,
+umb:`<ellipse cx='20' cy='9' rx='9' ry='4'/><ellipse cx='20' cy='17' rx='13' ry='4'/><ellipse cx='20' cy='26' rx='10' ry='4'/>`,
+eu:`<ellipse cx='11' cy='12' rx='8' ry='3'/><ellipse cx='29' cy='8' rx='8' ry='3'/><ellipse cx='25' cy='22' rx='9' ry='3'/><ellipse cx='13' cy='30' rx='8' ry='3'/>`
+};
+var D={
+'Plátano de sombra':['round','#7fa044','plat','#c9a24a','#9a8f78'],
+'Magnolio':['oval','#2f6b3c','wide','#3f7a3a'],
+'Roble común':['round','#5f8a3a','oak','#a8742f'],
+'Castaño':['round','#6a9a3a','tooth','#b88a3a'],
+'Haya':['oval','#6fa046','ov','#c0803a','#8d8b82'],
+'Liquidámbar':['cone','#b8532c','liq','#c0452a'],
+'Eucalipto':['eu','#6f9a7a','eucal','#7fa070','#cbb89a'],
+'Encina':['round','#3c5f36','spiny','#4a6b3a'],
+'Arce / falso plátano':['round','#8fa63a','arce','#d28a2a'],
+'Castaño de Indias':['round','#5a8a3a','indias','#b2863a'],
+'Chopo / álamo':['col','#79a34a','chopo','#b9a13a'],
+'Tilo':['oval','#6f9e4a','heart','#c8b040'],
+'Madroño':['round','#4a7a3a','el','#4f7d3a'],
+'Abedul':['slim','#8fb85a','abed','#d6b53a','#e8e4da'],
+'Laurel':['cone','#2f6a40','el','#3a7a45'],
+'Olmo':['vase','#5f8f3a','tooth','#b09a40'],
+'Fresno':['oval','#6a9a48','fresno','#9aa04a'],
+'Sauce':['weep','#8fb06a','sauce','#9fb860'],
+'Aliso':['cone','#4e7f3c','ov','#6a8a3a'],
+'Pino insigne':['umb','#2f5a35','pino','#3d6b3a','#8a5a3a'],
+'Ginkgo':['slim','#b7b834','gink','#d9c63a','#8d8b82'],
+'Tejo':['cone','#254a2f','tejo','#2f5a35']
+};
+function art(n){
+ var d=D[n];if(!d)return'';
+ var k=d[0],tall=(k==='umb'||k==='eu'||k==='col');
+ return `<svg viewBox='0 0 80 56' aria-hidden='true'><rect x='${tall?19:18}' y='${tall?8:34}' width='${tall?3:4}' height='${tall?46:20}' fill='${d[4]||'#7a5a3a'}'/><g fill='${d[1]}' stroke='${d[1]}' stroke-linejoin='round'>${K[k]}</g><g transform='translate(46 12) scale(.95)' fill='${d[3]}' stroke='#00000055' stroke-width='1' stroke-linejoin='round'>${L[d[2]]}</g></svg>`;
+}
+var sz=null,ht=null;
+function paint(){
+ var hl=ht?(ZT[ht]||[]):[];
+ [].forEach.call(document.querySelectorAll("[data-z]"),function(g){var c=g.getAttribute("data-z");g.firstElementChild.setAttribute("class","z"+(hl.indexOf(c)>-1?" on":"")+(sz===c?" sel":""))});
+ document.getElementById("hint").textContent=sz?"Zona: "+Z[sz]+" · toca de nuevo para quitar el filtro":ht?"Zonas de: "+ht:"Toca una zona para filtrar los árboles, o un árbol para ver dónde está.";
+}
+[].forEach.call(document.querySelectorAll("[data-z]"),function(g){g.onclick=function(){var c=g.getAttribute("data-z");sz=sz===c?null:c;ht=null;render()}});
+list.onclick=function(e){var c=e.target.closest(".card");if(!c)return;var n=c.getAttribute("data-n");ht=ht===n?null:n;paint()};
+render();
+</script>
+</body>
+</html>
